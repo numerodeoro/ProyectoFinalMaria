@@ -1,0 +1,14 @@
+# ignorar archivos compilados de Python, entornos y base de datos locales
+__pycache__/
+*.py[cod]
+*.pyo
+.vscode/
+venv/
+.venv/
+*.db
+*.log
+*.tmp
+.env
+*.env
+.DS_Store
+Thumbs.db
