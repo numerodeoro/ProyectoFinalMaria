@@ -280,11 +280,11 @@ def calcular_estadisticas_categoria(nombre_categoria):
 def determinar_status_stock(stock_global, stock_proteccion, demanda_semanal):
     """
     Determina el status del stock según la lógica:
-    - BAJO STOCK: stock_global <= stock_proteccion (20% de demanda semanal)
+    - BAJO STOCK: stock_global == 0 O stock_global <= stock_proteccion (20% de demanda semanal)
     - STOCK NORMAL: stock_proteccion < stock_global <= demanda_semanal
     - EXCESO DE STOCK: stock_global > demanda_semanal
     """
-    if stock_global <= stock_proteccion:
+    if stock_global == 0 or stock_global <= stock_proteccion:
         return "BAJO STOCK"
     elif stock_global <= demanda_semanal:
         return "STOCK NORMAL"
@@ -350,7 +350,7 @@ def actualizar_estadisticas_todas_categorias(demanda_semanal_default=50):
                     # Calcular stock de protección (20% de demanda semanal)
                     stock_proteccion = int(demanda_semanal * 0.2)
                     
-                    # Determinar status del stock
+                    # Determinar status del stock (ahora maneja correctamente stock = 0)
                     status = determinar_status_stock(stats['stock_global'], stock_proteccion, demanda_semanal)
                     
                     registrar_categoria(

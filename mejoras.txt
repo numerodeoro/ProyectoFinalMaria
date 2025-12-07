@@ -1,8 +1,8 @@
 Dentro de 1- Gestión de productos
    1-Registrar producto: cuando no existe la categoría, no me lo deja registrar y no me da opciones para salir si el usuario decide salir sin cambios. Necesito que cuando el usuario ingrese una categoría que no existe, al intentar ingresar un producto nuevo, el sistema le avise que no existe la categoría y le pregunte si quiere crearla, instanciando el menú de registrar categoría pero luego volviendo a esta ventana. Es un terrible chino, no tengo idea de si me va a salir.
 Dentro de 2- Gestión de categorías
-2- mostrar todas las categorías: en el apartado “detalle de precios”, pone todo en 0, aún cuando hay productos registrados dentro de la categoría, creo que es un problema de lectura de tablas, porque los productos y sus precios están en la tabla “productos”, pero las categorías y el estado del stock están en la tabla  “categorías”. En la parte que muestro el stock, pone stock normal cuando el stock es 0, ahí debería considerar “bajo stock”, aún si no tengo datos de la demanda semanal. Ya lo arreglé en los settings por default.
+2- mostrar todas las categorías: en el apartado “detalle de precios”, pone todo en 0, aún cuando hay productos registrados dentro de la categoría, creo que es un problema de lectura de tablas, porque los productos y sus precios están en la tabla “productos”, pero las categorías y el estado del stock están en la tabla  “categorías”. 
 3- actualizar demanda semanal: si no se hace ningún input, falta la opción que lo deje salir al usuario de esta parte y no que lo obligue a escribir algo
 
 Dentro de 3 – Reportes y análisis
-2- productos con bajo stock. En lugar de que le pregunte al usuario la cantidad límite para el reporte, debería considerar con bajo stock cuando la categoría esté por debajo del stock de seguridad. esto lo debo modificar en la funcion def menu_reporte_bajo_stock()
+2- productos con bajo stock. En lugar de que le pregunte al usuario la cantidad límite para el reporte, debería considerar con bajo stock cuando la categoría esté por debajo del stock de seguridad. 
