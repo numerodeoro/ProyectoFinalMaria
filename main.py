@@ -224,7 +224,7 @@ def menu_registrar_categoria():
     min_price = 0.0
     max_price = 0.0
     stock_global = 0
-    status_stock = "STOCK NORMAL"
+    status_stock = "BAJO STOCK"
     
     if db_manager.registrar_categoria(nombre, mean, min_price, max_price, stock_global, demanda_semanal, status_stock):
         imprimir_exito(f"Categoría '{nombre}' registrada correctamente.")
@@ -327,11 +327,11 @@ def menu_eliminar_categoria():
     productos = db_manager.buscar_producto_texto(nombre)
     if productos:
         imprimir_error(f"No se puede eliminar '{nombre}' porque tiene {len(productos)} productos asociados.")
-        print("Elimine primero los productos o cámbieles la categoría.")
+        print("Elimine primero los productos o cambie su categoría.")
         return
     
-    confirm = input(f"¿Seguro que desea eliminar la categoría '{nombre}'? (s/n): ").lower()
-    if confirm == 's':
+    confirma = input(f"¿Seguro que desea eliminar la categoría '{nombre}'? (s/n): ").lower()
+    if confirma == 's':
         if db_manager.eliminar_categoria(nombre):
             imprimir_exito("Categoría eliminada.")
         else:
@@ -346,8 +346,8 @@ def menu_actualizar_estadisticas():
     print("  • Precios promedio, mínimo y máximo")
     print("  • Status de stock")
     
-    confirm = input("\n¿Continuar? (s/n): ").lower()
-    if confirm == 's':
+    confirma = input("\n¿Continuar? (s/n): ").lower()
+    if confirma == 's':
         if db_manager.actualizar_estadisticas_todas_categorias():
             imprimir_exito("Estadísticas actualizadas correctamente.")
         else:

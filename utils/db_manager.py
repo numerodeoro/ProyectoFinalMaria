@@ -284,17 +284,16 @@ def determinar_status_stock(stock_global, stock_proteccion, demanda_semanal):
     - STOCK NORMAL: stock_proteccion < stock_global <= demanda_semanal
     - EXCESO DE STOCK: stock_global > demanda_semanal
     """
-    # DEBUG: descomentar para ver qué valores recibe
-    print("[DEBUG] stock={stock_global}, proteccion={stock_proteccion}, demanda={demanda_semanal}")
+ 
     
     if stock_global == 0 or stock_global <= stock_proteccion:
-        print("[DEBUG] → BAJO STOCK")
+       
         return "BAJO STOCK"
     elif stock_global <= demanda_semanal:
-        print("[DEBUG] → STOCK NORMAL")
+        
         return "STOCK NORMAL"
     else:
-        print("[DEBUG] → EXCESO DE STOCK")
+        
         return "EXCESO DE STOCK"
 
 def actualizar_stock_categoria(nombre_categoria, nuevo_stock_global):
@@ -333,7 +332,7 @@ def actualizar_stock_categoria(nombre_categoria, nuevo_stock_global):
         imprimir_error(f"Error al actualizar stock de categoría: {e}")
         return False
 
-def actualizar_estadisticas_todas_categorias(demanda_semanal_default=50):
+def actualizar_estadisticas_todas_categorias(demanda_semanal_default=1):
     """
     Actualiza automáticamente las estadísticas de todas las categorías.
     Calcula el status según la lógica definida.
