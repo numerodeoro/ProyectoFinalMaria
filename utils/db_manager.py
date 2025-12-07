@@ -284,11 +284,17 @@ def determinar_status_stock(stock_global, stock_proteccion, demanda_semanal):
     - STOCK NORMAL: stock_proteccion < stock_global <= demanda_semanal
     - EXCESO DE STOCK: stock_global > demanda_semanal
     """
+    # DEBUG: descomentar para ver qué valores recibe
+    print("[DEBUG] stock={stock_global}, proteccion={stock_proteccion}, demanda={demanda_semanal}")
+    
     if stock_global == 0 or stock_global <= stock_proteccion:
+        print("[DEBUG] → BAJO STOCK")
         return "BAJO STOCK"
     elif stock_global <= demanda_semanal:
+        print("[DEBUG] → STOCK NORMAL")
         return "STOCK NORMAL"
     else:
+        print("[DEBUG] → EXCESO DE STOCK")
         return "EXCESO DE STOCK"
 
 def actualizar_stock_categoria(nombre_categoria, nuevo_stock_global):
@@ -327,7 +333,7 @@ def actualizar_stock_categoria(nombre_categoria, nuevo_stock_global):
         imprimir_error(f"Error al actualizar stock de categoría: {e}")
         return False
 
-def actualizar_estadisticas_todas_categorias(demanda_semanal_default=50):
+def actualizar_estadisticas_todas_categorias():
     """
     Actualiza automáticamente las estadísticas de todas las categorías.
     Calcula el status según la lógica definida.
@@ -336,21 +342,19 @@ def actualizar_estadisticas_todas_categorias(demanda_semanal_default=50):
         with conectar_db() as conn:
             cursor = conn.cursor()
             
-            # Obtener categorías únicas de productos
-            cursor.execute(f"SELECT DISTINCT categoria FROM {TABLE_NAME} WHERE categoria IS NOT NULL")
-            categorias = [row[0] for row in cursor.fetchall()]
+            # Obtener TODAS las categorías registradas (no solo las que tienen productos)
+            cursor.execute(f"SELECT categoria, demanda_semanal FROM {TABLE_CATEGORIAS}")
+            todas_categorias = cursor.fetchall()
             
-            for cat in categorias:
+            for cat_info in todas_categorias:
+                cat = cat_info[0]
+                demanda_semanal = cat_info[1]
+                
                 stats = calcular_estadisticas_categoria(cat)
-                if stats:
-                    # Obtener demanda semanal si ya existe, sino usar default
-                    cat_existente = buscar_categoria(cat)
-                    demanda_semanal = cat_existente[5] if cat_existente else demanda_semanal_default
-                    
-                    # Calcular stock de protección (20% de demanda semanal)
+                
+                if stats and stats['stock_global'] > 0:
+                    # Categoría con productos
                     stock_proteccion = int(demanda_semanal * 0.2)
-                    
-                    # Determinar status del stock (ahora maneja correctamente stock = 0)
                     status = determinar_status_stock(stats['stock_global'], stock_proteccion, demanda_semanal)
                     
                     registrar_categoria(
@@ -362,8 +366,22 @@ def actualizar_estadisticas_todas_categorias(demanda_semanal_default=50):
                         demanda_semanal=demanda_semanal,
                         status_stock=status
                     )
+                else:
+                    # Categoría sin productos o con stock = 0
+                    stock_proteccion = int(demanda_semanal * 0.2)
+                    status = "BAJO STOCK"  # Sin productos = crítico
+                    
+                    registrar_categoria(
+                        categoria=cat,
+                        mean=0.0,
+                        min_price=0.0,
+                        max_price=0.0,
+                        stock_global=0,
+                        demanda_semanal=demanda_semanal,
+                        status_stock=status
+                    )
             
-            print(f"✓ Estadísticas actualizadas para {len(categorias)} categorías")
+            print(f"✓ Estadísticas actualizadas para {len(todas_categorias)} categorías")
             return True
     except sqlite3.Error as e:
         imprimir_error(f"Error al actualizar estadísticas: {e}")
