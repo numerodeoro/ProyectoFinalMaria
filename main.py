@@ -9,7 +9,7 @@ import sys
 # FUNCIONES AUXILIARES                   
 
 def mostrar_tabla_productos(productos):
-    """Muestra tabla formateada de productos"""
+    """Muestra el listado de productos"""
     if not productos:
         print("No se encontraron productos.")
         return
@@ -21,9 +21,9 @@ def mostrar_tabla_productos(productos):
     print("-" * 70)
 
 def mostrar_tabla_categorias(categorias):
-    """Muestra tabla formateada de categorías"""
+    """Muestra la tabla de categorías"""
     if not categorias:
-        print("No se encontraron categorías.")
+        print("Aún no se registraron categorías.")
         return
     
     print(f"\n{'CATEGORÍA':<20} {'STOCK':<10} {'DEMANDA/SEM':<15} {'PROTECCIÓN':<12} {'STATUS':<20}")
@@ -39,7 +39,7 @@ def mostrar_tabla_categorias(categorias):
     print("-" * 85)
 
 def actualizar_stats_categoria(categoria_nombre):
-    """Actualiza las estadísticas de una categoría después de modificar productos"""
+    """Actualiza las estadísticas de una categoría después de ingresar o eliminar productos"""
     stats = db_manager.calcular_estadisticas_categoria(categoria_nombre)
     if stats:
         db_manager.actualizar_stock_categoria(categoria_nombre, stats['stock_global'])
@@ -47,13 +47,13 @@ def actualizar_stats_categoria(categoria_nombre):
 # MENÚ DE PRODUCTOS
 
 def menu_registrar_producto():
-    """Registra un nuevo producto con validación de categoría"""
+    """Registra un nuevo producto y valida la existencia de la categoría"""
     imprimir_titulo("Registrar Nuevo Producto")
     
     nombre = validar_input_string("Nombre")
     desc = validar_descripcion("Descripción (opcional)").strip()
     
-    # Mostrar categorías disponibles y validar
+    # Muestra las categorías disponibles y valida la selección
     print("\nCategorías registradas:")
     listar_categorias_disponibles()
     categ = validar_categoria_con_reintento("Categoría")
@@ -63,7 +63,7 @@ def menu_registrar_producto():
     
     if db_manager.registrar_producto(nombre, desc, cantidad, precio, categ):
         imprimir_exito("Producto registrado correctamente.")
-        # Actualizar estadísticas de la categoría
+        # Actualiza las estadísticas de la categoría
         actualizar_stats_categoria(categ)
     else:
         imprimir_error("No se pudo registrar el producto.")
@@ -110,7 +110,7 @@ def menu_actualizar_producto():
 
     if db_manager.actualizar_producto(id_prod, nuevo_nombre, nueva_desc, nuevo_cant, nuevo_precio, nueva_cat):
         imprimir_exito("Producto actualizado.")
-        # Actualizar estadísticas de ambas categorías si cambió
+        # Actualiza las estadísticas de ambas categorías si cambió
         if categoria_actual != nueva_cat:
             actualizar_stats_categoria(categoria_actual)
         actualizar_stats_categoria(nueva_cat)
@@ -132,8 +132,8 @@ def menu_eliminar_producto():
     
     categoria = producto[5]
     
-    confirm = input(f"¿Seguro que desea eliminar '{producto[1]}'? (s/n): ").lower()
-    if confirm == 's':
+    confirma = input(f"¿Seguro que desea eliminar '{producto[1]}'? (s/n): ").lower()
+    if confirma == 's':
         if db_manager.eliminar_producto(id_prod):
             imprimir_exito("Producto eliminado.")
             # Actualizar estadísticas de la categoría
@@ -258,8 +258,8 @@ def menu_eliminar_categoria():
         print("Elimine primero los productos o cámbieles la categoría.")
         return
     
-    confirm = input(f"¿Seguro que desea eliminar la categoría '{nombre}'? (s/n): ").lower()
-    if confirm == 's':
+    confirma = input(f"¿Seguro que desea eliminar la categoría '{nombre}'? (s/n): ").lower()
+    if confirma == 's':
         if db_manager.eliminar_categoria(nombre):
             imprimir_exito("Categoría eliminada.")
         else:
@@ -274,8 +274,8 @@ def menu_actualizar_estadisticas():
     print("  • Precios promedio, mínimo y máximo")
     print("  • Status de stock")
     
-    confirm = input("\n¿Continuar? (s/n): ").lower()
-    if confirm == 's':
+    confirma = input("\n¿Continuar? (s/n): ").lower()
+    if confirma == 's':
         if db_manager.actualizar_estadisticas_todas_categorias():
             imprimir_exito("Estadísticas actualizadas correctamente.")
         else:
