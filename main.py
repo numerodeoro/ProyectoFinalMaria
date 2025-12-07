@@ -6,12 +6,10 @@ from utils.helpers import (
 from utils import db_manager
 import sys
 
-# ========================================
 # FUNCIONES AUXILIARES
-# ========================================
 
 def mostrar_tabla_productos(productos):
-    """Muestra tabla formateada de productos"""
+    """Muestra los productos"""
     if not productos:
         print("No se encontraron productos.")
         return
@@ -23,7 +21,7 @@ def mostrar_tabla_productos(productos):
     print("-" * 70)
 
 def mostrar_tabla_categorias(categorias):
-    """Muestra tabla formateada de categorías"""
+    """Muestra las categorías"""
     if not categorias:
         print("No se encontraron categorías.")
         return

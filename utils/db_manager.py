@@ -333,7 +333,7 @@ def actualizar_stock_categoria(nombre_categoria, nuevo_stock_global):
         imprimir_error(f"Error al actualizar stock de categoría: {e}")
         return False
 
-def actualizar_estadisticas_todas_categorias():
+def actualizar_estadisticas_todas_categorias(demanda_semanal_default=50):
     """
     Actualiza automáticamente las estadísticas de todas las categorías.
     Calcula el status según la lógica definida.
@@ -368,7 +368,7 @@ def actualizar_estadisticas_todas_categorias():
                     )
                 else:
                     # Categoría sin productos o con stock = 0
-                    stock_proteccion = int(demanda_semanal * 0.2)
+                    stock_proteccion = int(demanda_semanal_default * 0.2)
                     status = "BAJO STOCK"  # Sin productos = crítico
                     
                     registrar_categoria(
@@ -377,7 +377,7 @@ def actualizar_estadisticas_todas_categorias():
                         min_price=0.0,
                         max_price=0.0,
                         stock_global=0,
-                        demanda_semanal=demanda_semanal,
+                        demanda_semanal=demanda_semanal_default,
                         status_stock=status
                     )
             
