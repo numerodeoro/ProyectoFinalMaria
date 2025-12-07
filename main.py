@@ -182,7 +182,7 @@ def menu_registrar_categoria():
     min_price = 0.0
     max_price = 0.0
     stock_global = 0
-    status_stock = "STOCK NORMAL"
+    status_stock = "BAJO STOCK"
     
     if db_manager.registrar_categoria(nombre, mean, min_price, max_price, stock_global, demanda_semanal, status_stock):
         imprimir_exito(f"Categoría '{nombre}' registrada correctamente.")
