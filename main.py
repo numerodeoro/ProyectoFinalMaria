@@ -6,9 +6,7 @@ from utils.helpers import (
 from utils import db_manager
 import sys
 
-# ========================================
-# FUNCIONES AUXILIARES
-# ========================================
+# FUNCIONES AUXILIARES                   
 
 def mostrar_tabla_productos(productos):
     """Muestra tabla formateada de productos"""
@@ -46,9 +44,7 @@ def actualizar_stats_categoria(categoria_nombre):
     if stats:
         db_manager.actualizar_stock_categoria(categoria_nombre, stats['stock_global'])
 
-# ========================================
 # MENÚ DE PRODUCTOS
-# ========================================
 
 def menu_registrar_producto():
     """Registra un nuevo producto con validación de categoría"""
@@ -166,9 +162,7 @@ def menu_buscar_producto():
     else:
         imprimir_error("Opción inválida.")
 
-# ========================================
 # MENÚ DE CATEGORÍAS
-# ========================================
 
 def menu_registrar_categoria():
     """Registra una nueva categoría"""
@@ -287,9 +281,7 @@ def menu_actualizar_estadisticas():
         else:
             imprimir_error("Hubo un error al actualizar.")
 
-# ========================================
 # MENÚ DE REPORTES
-# ========================================
 
 def menu_reporte_bajo_stock():
     """Reporte de productos con bajo stock"""
@@ -352,9 +344,9 @@ def menu_reporte_por_categoria():
     else:
         print(f"No hay productos en la categoría '{nombre}'.")
 
-def menu_dashboard():
-    """Dashboard con resumen general"""
-    imprimir_titulo("Dashboard - Resumen General")
+def menu_panel():
+    """Panel de resumen general"""
+    imprimir_titulo("Panel - Resumen General")
     
     # Productos
     productos = db_manager.obtener_productos()
@@ -372,7 +364,7 @@ def menu_dashboard():
         normal = sum(1 for cat in categorias if cat[7] == "STOCK NORMAL")
         exceso = sum(1 for cat in categorias if cat[7] == "EXCESO DE STOCK")
         
-        print(f"\n📊 Estado de categorías:")
+        print("\n📊 Estado de categorías:")
         print(f"  🔴 Bajo stock: {bajo_stock}")
         print(f"  🟢 Stock normal: {normal}")
         print(f"  🟡 Exceso de stock: {exceso}")
@@ -380,9 +372,7 @@ def menu_dashboard():
         if bajo_stock > 0:
             print(f"\n⚠️  ¡ATENCIÓN! Hay {bajo_stock} categorías con bajo stock")
 
-# ========================================
 # MENÚS PRINCIPALES
-# ========================================
 
 def menu_productos():
     """Submenú de gestión de productos"""
@@ -450,7 +440,7 @@ def menu_reportes():
         print("\n" + "="*40)
         print("   REPORTES Y ANÁLISIS")
         print("="*40)
-        print("1. Dashboard General")
+        print("1. Panel General")
         print("2. Productos con Bajo Stock")
         print("3. Categorías Críticas")
         print("4. Productos por Categoría")
@@ -459,7 +449,7 @@ def menu_reportes():
         opcion = input("\nSeleccione una opción: ")
         
         if opcion == '1':
-            menu_dashboard()
+            menu_panel()
         elif opcion == '2':
             menu_reporte_bajo_stock()
         elif opcion == '3':
