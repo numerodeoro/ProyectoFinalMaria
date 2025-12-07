@@ -44,9 +44,7 @@ def actualizar_stats_categoria(categoria_nombre):
     if stats:
         db_manager.actualizar_stock_categoria(categoria_nombre, stats['stock_global'])
 
-# ========================================
 # MENÚ DE PRODUCTOS
-# ========================================
 
 def menu_registrar_producto():
     """Registra un nuevo producto con validación de categoría"""
@@ -55,11 +53,11 @@ def menu_registrar_producto():
     nombre = validar_input_string("Nombre")
     desc = validar_descripcion("Descripción (opcional)").strip()
     
-    # Mostrar categorías disponibles
+    # Muestra las categorías disponibles
     print("\nCategorías registradas:")
     listar_categorias_disponibles()
     
-    # Bucle para validar o crear categoría
+    # While para validar o crear categoría
     while True:
         categ = input("Categoría (o escriba 'salir' para cancelar): ").strip().upper()
         
@@ -73,9 +71,9 @@ def menu_registrar_producto():
         
         # Verificar si existe la categoría
         if db_manager.buscar_categoria(categ):
-            break  # Categoría válida, continuar
+            break  # Categoría válida
         else:
-            # Categoría no existe - preguntar si quiere crearla
+            # La categoría no existe, le pregunta al usuario si quiere crearla
             imprimir_error(f"La categoría '{categ}' no existe.")
             crear = input("¿Desea crear esta categoría ahora? (s/n): ").lower()
             
@@ -90,20 +88,20 @@ def menu_registrar_producto():
                 if db_manager.registrar_categoria(categ, 0.0, 0.0, 0.0, 0, demanda_semanal, status_inicial):
                     imprimir_exito(f"Categoría '{categ}' creada correctamente.")
                     print(f"Stock de protección: {stock_proteccion} unidades")
-                    break  # Categoría creada, continuar con el producto
+                    break  # Categoría creada
                 else:
                     imprimir_error("No se pudo crear la categoría. Intente nuevamente.")
             else:
                 print("Por favor, seleccione una categoría existente o escriba 'salir'.")
                 listar_categorias_disponibles()
     
-    # Continuar con el registro del producto
+    # Continúa con el registro del producto
     cantidad = validar_input_int("Cantidad inicial")
     precio = validar_input_float("Precio unitario")
     
     if db_manager.registrar_producto(nombre, desc, cantidad, precio, categ):
         imprimir_exito("Producto registrado correctamente.")
-        # Actualizar estadísticas de la categoría
+        # Actualiza estadísticas de la categoría
         actualizar_stats_categoria(categ)
     else:
         imprimir_error("No se pudo registrar el producto.")
@@ -126,12 +124,12 @@ def menu_actualizar_producto():
         return
 
     print(f"\nEditando: {producto_actual[1]}")
-    print("Deje vacío si no desea modificar el campo.")
+    print("Deje vacío si no desea hacer modificaciones.")
     
     nuevo_nombre = input(f"Nombre [{producto_actual[1]}]: ").strip() or producto_actual[1]
     nueva_desc = input(f"Descripción [{producto_actual[2]}]: ").strip() or producto_actual[2]
     
-    # Validar categoría si el usuario quiere cambiarla
+    # Valida la categoría si el usuario quiere cambiarla
     categoria_actual = producto_actual[5]
     print(f"\nCategoría actual: {categoria_actual}")
     cambiar_cat = input("¿Desea cambiar la categoría? (s/n): ").lower()
@@ -150,7 +148,7 @@ def menu_actualizar_producto():
 
     if db_manager.actualizar_producto(id_prod, nuevo_nombre, nueva_desc, nuevo_cant, nuevo_precio, nueva_cat):
         imprimir_exito("Producto actualizado.")
-        # Actualizar estadísticas de ambas categorías si cambió
+        # Actualiza estadísticas de ambas categorías si cambió
         if categoria_actual != nueva_cat:
             actualizar_stats_categoria(categoria_actual)
         actualizar_stats_categoria(nueva_cat)
@@ -164,7 +162,7 @@ def menu_eliminar_producto():
 
     id_prod = validar_input_int("ID del producto a eliminar")
     
-    # Obtener el producto para saber su categoría
+    # Lee el producto para saber la categoría
     producto = db_manager.buscar_producto_id(id_prod)
     if not producto:
         imprimir_error("Producto no encontrado.")
@@ -172,11 +170,11 @@ def menu_eliminar_producto():
     
     categoria = producto[5]
     
-    confirm = input(f"¿Seguro que desea eliminar '{producto[1]}'? (s/n): ").lower()
-    if confirm == 's':
+    confirma = input(f"¿Seguro que desea eliminar '{producto[1]}'? (s/n): ").lower()
+    if confirma == 's':
         if db_manager.eliminar_producto(id_prod):
             imprimir_exito("Producto eliminado.")
-            # Actualizar estadísticas de la categoría
+            # Actualiza estadísticas de la categoría
             actualizar_stats_categoria(categoria)
         else:
             imprimir_error("No se pudo eliminar.")
@@ -202,9 +200,7 @@ def menu_buscar_producto():
     else:
         imprimir_error("Opción inválida.")
 
-# ========================================
 # MENÚ DE CATEGORÍAS
-# ========================================
 
 def menu_registrar_categoria():
     """Registra una nueva categoría"""
@@ -212,7 +208,7 @@ def menu_registrar_categoria():
     
     nombre = validar_input_string("Nombre de la categoría").upper()
     
-    # Verificar si ya existe
+    # Verifica si ya existe
     if db_manager.buscar_categoria(nombre):
         imprimir_error(f"La categoría '{nombre}' ya existe.")
         return
@@ -237,7 +233,7 @@ def menu_mostrar_categorias():
     """Muestra todas las categorías con sus estadísticas"""
     imprimir_titulo("Listado de Categorías")
     
-    # Primero actualizar estadísticas automáticamente
+    # Primero actualiza estadísticas automáticamente
     db_manager.actualizar_estadisticas_todas_categorias()
     
     categorias = db_manager.obtener_categorias()
@@ -248,7 +244,7 @@ def menu_mostrar_categorias():
     
     mostrar_tabla_categorias(categorias)
     
-    # Mostrar detalles adicionales
+    # Muestra los otros detalles
     print("\nDetalle de precios:")
     for cat in categorias:
         nombre = cat[0]
@@ -256,7 +252,7 @@ def menu_mostrar_categorias():
         min_price = cat[2]
         max_price = cat[3]
         
-        if mean > 0:  # Solo mostrar si hay datos
+        if mean > 0:  # Solo muestra si hay datos
             print(f"  {nombre}: Precio promedio ${mean:.2f} | Rango: ${min_price:.2f} - ${max_price:.2f}")
         else:
             print(f"  {nombre}: Sin productos registrados aún")
@@ -298,7 +294,7 @@ def menu_actualizar_categoria():
         imprimir_error("Debe ingresar un número válido.")
         return
     
-    # Mantener los otros valores
+    # Conserva los otros valores
     if db_manager.actualizar_categoria(
         nombre_input, 
         cat_actual[1],  # mean
@@ -311,7 +307,7 @@ def menu_actualizar_categoria():
         imprimir_exito("Categoría actualizada.")
         nuevo_stock_prot = int(nueva_demanda * 0.2)
         print(f"Nuevo stock de protección: {nuevo_stock_prot} unidades")
-        # Recalcular status con nueva demanda
+        # Recalcula el status del stock con la nueva demanda
         actualizar_stats_categoria(nombre_input)
     else:
         imprimir_error("No se pudo actualizar.")
@@ -323,7 +319,7 @@ def menu_eliminar_categoria():
     listar_categorias_disponibles()
     nombre = validar_categoria_con_reintento("Nombre de la categoría a eliminar")
     
-    # Verificar si tiene productos asociados
+    # Verifica si tiene productos asociadosguardados en ella
     productos = db_manager.buscar_producto_texto(nombre)
     if productos:
         imprimir_error(f"No se puede eliminar '{nombre}' porque tiene {len(productos)} productos asociados.")
@@ -353,12 +349,10 @@ def menu_actualizar_estadisticas():
         else:
             imprimir_error("Hubo un error al actualizar.")
 
-# ========================================
 # MENÚ DE REPORTES
-# ========================================
 
 def menu_reporte_bajo_stock():
-    """Reporte de productos cuya categoría está por debajo del stock de seguridad"""
+    """Reporta los productos cuya categoría está por debajo del stock de seguridad"""
     imprimir_titulo("Reporte de Productos con Bajo Stock")
     
     categorias = db_manager.obtener_categorias()
@@ -366,7 +360,7 @@ def menu_reporte_bajo_stock():
         print("No hay categorías registradas.")
         return
     
-    # Filtrar categorías con bajo stock
+    # Filtra las categorías con bajo stock
     categorias_criticas = [cat for cat in categorias if cat[7] == "BAJO STOCK"]
     
     if not categorias_criticas:
@@ -377,7 +371,7 @@ def menu_reporte_bajo_stock():
     for cat in categorias_criticas:
         print(f"  • {cat[0]} - Stock actual: {cat[4]} | Protección: {cat[6]}")
     
-    # Obtener productos de esas categorías
+    # Lee productos de esas categorías
     productos_bajo_stock = []
     for cat in categorias_criticas:
         prods = db_manager.buscar_producto_texto(cat[0])
@@ -406,7 +400,7 @@ def menu_reporte_categorias_criticas():
     else:
         imprimir_exito("No hay categorías en estado crítico.")
     
-    # Mostrar también las normales
+    # Muestra también las normales
     normales = [cat for cat in categorias if cat[7] == "STOCK NORMAL"]
     if normales:
         print(f"\nCategorías con stock normal: {len(normales)}")
@@ -428,7 +422,7 @@ def menu_reporte_por_categoria():
         print(f"\nProductos en categoría '{nombre}': {len(productos)}")
         mostrar_tabla_productos(productos)
         
-        # Mostrar info de la categoría
+        # Muestra la info de la categoría
         cat = db_manager.buscar_categoria(nombre)
         if cat:
             print(f"\nEstadísticas de '{nombre}':")
@@ -439,9 +433,9 @@ def menu_reporte_por_categoria():
     else:
         print(f"No hay productos en la categoría '{nombre}'.")
 
-def menu_dashboard():
-    """Dashboard con resumen general"""
-    imprimir_titulo("Dashboard - Resumen General")
+def menu_panel():
+    """panel con resumen general"""
+    imprimir_titulo("panel - Resumen General")
     
     # Productos
     productos = db_manager.obtener_productos()
@@ -467,9 +461,7 @@ def menu_dashboard():
         if bajo_stock > 0:
             print(f"\n⚠️  ¡ATENCIÓN! Hay {bajo_stock} categorías con bajo stock")
 
-# ========================================
 # MENÚS PRINCIPALES
-# ========================================
 
 def menu_productos():
     """Submenú de gestión de productos"""
@@ -537,7 +529,7 @@ def menu_reportes():
         print("\n" + "="*40)
         print("   REPORTES Y ANÁLISIS")
         print("="*40)
-        print("1. Dashboard General")
+        print("1. Panel General")
         print("2. Productos con Bajo Stock")
         print("3. Categorías Críticas")
         print("4. Productos por Categoría")
@@ -546,7 +538,7 @@ def menu_reportes():
         opcion = input("\nSeleccione una opción: ")
         
         if opcion == '1':
-            menu_dashboard()
+            menu_panel()
         elif opcion == '2':
             menu_reporte_bajo_stock()
         elif opcion == '3':

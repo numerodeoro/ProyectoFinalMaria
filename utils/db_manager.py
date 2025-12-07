@@ -44,15 +44,13 @@ def inicializar_db():
     except sqlite3.Error as e:
         imprimir_error(f"Error al inicializar la BD: {e}")
 
-# ========================================
 # FUNCIONES PARA PRODUCTOS
-# ========================================
 
 def registrar_producto(nombre, descripcion, cantidad, precio, categoria):
     try:
         with conectar_db() as conn:
             cursor = conn.cursor()
-            # Normalizar categoría a mayúsculas
+            # Normaliza el string de la categoría
             categoria_upper = categoria.strip().upper() if categoria else None
             cursor.execute(f"INSERT INTO {TABLE_NAME} (nombre, descripcion, cantidad, precio, categoria) VALUES (?, ?, ?, ?, ?)",
                            (nombre, descripcion, cantidad, precio, categoria_upper))
@@ -86,7 +84,7 @@ def buscar_producto_texto(termino):
     try:
         with conectar_db() as conn:
             cursor = conn.cursor()
-            # Normalizar término de búsqueda a mayúsculas
+            # Normaliza los terminos de la query
             termino_upper = termino.strip().upper()
             query = f"SELECT * FROM {TABLE_NAME} WHERE UPPER(nombre) LIKE ? OR UPPER(categoria) LIKE ?"
             cursor.execute(query, (f'%{termino_upper}%', f'%{termino_upper}%'))
@@ -99,7 +97,7 @@ def actualizar_producto(id_prod, nombre, descripcion, cantidad, precio, categori
     try:
         with conectar_db() as conn:
             cursor = conn.cursor()
-            # Normalizar categoría a mayúsculas
+            # Normaliza el texto de la categoria
             categoria_upper = categoria.strip().upper() if categoria else None
             sql = f'''UPDATE {TABLE_NAME} SET 
                       nombre=?, descripcion=?, cantidad=?, precio=?, categoria=? 
@@ -136,17 +134,15 @@ def reporte_bajo_stock(limite):
         imprimir_error(f"Error en reporte: {e}")
         return []
 
-# ========================================
 # FUNCIONES PARA CATEGORÍAS
-# ========================================
 
 def registrar_categoria(categoria, mean, min_price, max_price, stock_global, demanda_semanal, status_stock):
     """Registra o actualiza una categoría en la BD. Normaliza a mayúsculas."""
     try:
-        # Normalizar categoría a mayúsculas
+        # Normaliza el texto de la categoría
         categoria_upper = categoria.strip().upper()
         
-        # Calcular stock de protección como 20% de la demanda semanal
+        # Calcula stock de protección como 20% de la demanda semanal
         stock_proteccion = int(demanda_semanal * 0.2)
         
         with conectar_db() as conn:
@@ -162,7 +158,7 @@ def registrar_categoria(categoria, mean, min_price, max_price, stock_global, dem
         return False
 
 def obtener_categorias():
-    """Obtiene todas las categorías"""
+    """Lee todas las categorías"""
     try:
         with conectar_db() as conn:
             cursor = conn.cursor()
@@ -177,7 +173,7 @@ def buscar_categoria(nombre_categoria):
     try:
         with conectar_db() as conn:
             cursor = conn.cursor()
-            # Normalizar a mayúsculas para búsqueda
+            # Normaliza los textos ara la query
             categoria_upper = nombre_categoria.strip().upper()
             cursor.execute(f"SELECT * FROM {TABLE_CATEGORIAS} WHERE categoria = ?", (categoria_upper,))
             return cursor.fetchone()
@@ -188,10 +184,9 @@ def buscar_categoria(nombre_categoria):
 def actualizar_categoria(categoria, mean, min_price, max_price, stock_global, demanda_semanal, status_stock):
     """Actualiza los datos de una categoría. Normaliza a mayúsculas."""
     try:
-        # Normalizar categoría a mayúsculas
         categoria_upper = categoria.strip().upper()
         
-        # Recalcular stock de protección como 20% de la demanda semanal
+        # Recalcula el stock de protección como 20% de la demanda semanal
         stock_proteccion = int(demanda_semanal * 0.2)
         
         with conectar_db() as conn:
@@ -212,7 +207,7 @@ def actualizar_categoria(categoria, mean, min_price, max_price, stock_global, de
 def actualizar_status_categoria(nombre_categoria, nuevo_status):
     """Actualiza solo el status de una categoría (para llamar desde el main). Normaliza a mayúsculas."""
     try:
-        # Normalizar categoría a mayúsculas
+        # Normaliza la categoria
         categoria_upper = nombre_categoria.strip().upper()
         
         with conectar_db() as conn:
@@ -229,7 +224,7 @@ def actualizar_status_categoria(nombre_categoria, nuevo_status):
 def eliminar_categoria(nombre_categoria):
     """Elimina una categoría. Normaliza a mayúsculas."""
     try:
-        # Normalizar categoría a mayúsculas
+        # Normaliza la categoria
         categoria_upper = nombre_categoria.strip().upper()
         
         with conectar_db() as conn:
@@ -246,13 +241,13 @@ def eliminar_categoria(nombre_categoria):
 def calcular_estadisticas_categoria(nombre_categoria):
     """Calcula estadísticas automáticas para una categoría basándose en sus productos. Búsqueda case-insensitive."""
     try:
-        # Normalizar categoría a mayúsculas
+        # Normaliza la categoria
         categoria_upper = nombre_categoria.strip().upper()
         
         with conectar_db() as conn:
             cursor = conn.cursor()
             
-            # Obtener estadísticas de productos de esta categoría
+            # Lee las estadísticas de productos de esta categoría
             sql = f'''SELECT 
                      AVG(precio) as mean,
                      MIN(precio) as min_price,
@@ -302,22 +297,21 @@ def actualizar_stock_categoria(nombre_categoria, nuevo_stock_global):
     Usar esta función después de ventas o compras. Normaliza a mayúsculas.
     """
     try:
-        # Normalizar categoría a mayúsculas
         categoria_upper = nombre_categoria.strip().upper()
         
-        # Obtener datos actuales de la categoría
+        # Lee los datos actuales de la categoría
         categoria_actual = buscar_categoria(categoria_upper)
         if not categoria_actual:
             return False
         
-        # categoria_actual es una tupla: (categoria, mean, min_price, max_price, stock_global, demanda_semanal, stock_proteccion, status_stock)
+        # categoria_actual: (categoria, mean, min_price, max_price, stock_global, demanda_semanal, stock_proteccion, status_stock)
         demanda_semanal = categoria_actual[5]
         stock_proteccion = int(demanda_semanal * 0.2)
         
-        # Determinar nuevo status
+        # Determina el nuevo status
         nuevo_status = determinar_status_stock(nuevo_stock_global, stock_proteccion, demanda_semanal)
         
-        # Actualizar en la BD
+        # Actualiza en la Base de Datos
         with conectar_db() as conn:
             cursor = conn.cursor()
             sql = f'''UPDATE {TABLE_CATEGORIAS} SET 
@@ -341,7 +335,7 @@ def actualizar_estadisticas_todas_categorias(demanda_semanal_default=1):
         with conectar_db() as conn:
             cursor = conn.cursor()
             
-            # Obtener TODAS las categorías registradas (no solo las que tienen productos)
+            # Lee TODAS las categorías registradas (no solo las que tienen productos)
             cursor.execute(f"SELECT categoria, demanda_semanal FROM {TABLE_CATEGORIAS}")
             todas_categorias = cursor.fetchall()
             
