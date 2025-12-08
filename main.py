@@ -13,7 +13,7 @@ def mostrar_tabla_productos(productos):
     if not productos:
         print("No se encontraron productos.")
         return
-
+    ## Formato de tabla con marginado izquierdo según cantidad de caracteres
     print(f"\n{'ID':<5} {'NOMBRE':<20} {'CATEGORIA':<15} {'PRECIO':<10} {'CANTIDAD':<10}")
     print("-" * 70)
     for prod in productos:
